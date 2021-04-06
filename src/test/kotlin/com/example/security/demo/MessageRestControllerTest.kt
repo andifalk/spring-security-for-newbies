@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -28,7 +30,7 @@ internal class MessageRestControllerTest(
     fun `get message`() {
         given(this.messageService.createHelloMessage(anyString())).willReturn("Hello World")
         mockMvc.perform(
-            get("/api/message")
+            get("/api/message").with(user("user").password("secret").roles("ADMIN"))
         )
             .andDo(print())
             .andExpect(status().isOk).andExpect(
@@ -43,7 +45,7 @@ internal class MessageRestControllerTest(
         given(this.messageService.createHelloMessage(anyString())).willReturn("Hello test")
 
         mockMvc.perform(
-            post("/api/message").contentType(MediaType.APPLICATION_JSON)
+            post("/api/message").with(csrf()).with(user("user")).contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(MessageRestController.MessageRequest(message = "test")))
         )
             .andDo(print())
