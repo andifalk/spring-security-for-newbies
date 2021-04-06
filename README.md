@@ -1,2 +1,3 @@
-# spring-security-for-newbies
-Spring Security Introduction Demos
+# Spring Security for Newbies
+
+Demos to show how Spring Security works.
