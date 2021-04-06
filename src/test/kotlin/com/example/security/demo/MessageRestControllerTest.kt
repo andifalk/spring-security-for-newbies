@@ -9,7 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
@@ -26,13 +26,11 @@ internal class MessageRestControllerTest(
 
     @Test
     fun `get message`() {
-        mockMvc.get("/api/message").andExpect { status { isOk() } }.andExpect {
-            content {
-                string(
-                        """{"greeting":"Hello World"}"""
-                )
-            }
-        }
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/message"))
+                .andExpect(status().isOk).andExpect(
+                        content().string(
+                                """{"greeting":"Hello World"}"""
+                        ))
     }
 
     @Test
