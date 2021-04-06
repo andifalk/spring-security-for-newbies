@@ -18,4 +18,11 @@ info:
   app:
     name: 'spring security for newbies'
 
+logging:
+  level:
+    org:
+      springframework:
+        security: debug
+
+
 my-secret-value: very-secret
