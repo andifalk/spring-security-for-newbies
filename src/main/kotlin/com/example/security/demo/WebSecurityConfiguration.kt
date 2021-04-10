@@ -11,34 +11,20 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.config.web.servlet.invoke
-import org.springframework.security.core.userdetails.User
-import org.springframework.security.core.userdetails.UserDetailsService
-import org.springframework.security.crypto.factory.PasswordEncoderFactories
-import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.security.provisioning.InMemoryUserDetailsManager
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 class WebSecurityConfiguration {
 
     @Bean
-    fun passwordEncoder(): PasswordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder()
-
-    @Bean
-    fun userDetailsService(): UserDetailsService {
-        val manager = InMemoryUserDetailsManager()
-        manager.createUser(
-            User.withUsername("user")
-                .password(passwordEncoder().encode("secret"))
-                .roles("USER").build()
-        )
-        manager.createUser(
-            User.withUsername("admin")
-                .password(passwordEncoder().encode("admin"))
-                .roles("USER", "ADMIN").build()
-        )
-        return manager
+    fun jwtAuthenticationConverter(): JwtAuthenticationConverter {
+        val jwtAuthoritiesConverter = JwtAuthoritiesConverter()
+        val jwtAuthenticationConverter = JwtAuthenticationConverter()
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtAuthoritiesConverter)
+        return jwtAuthenticationConverter
     }
 
     @Configuration
@@ -50,10 +36,12 @@ class WebSecurityConfiguration {
                 securityMatcher("/api/**")
                 authorizeRequests {
                     authorize("/api/admin", hasRole("ADMIN"))
-                    authorize(anyRequest, hasRole("USER"))
+                    authorize(anyRequest, hasAnyRole("USER", "ADMIN"))
                 }
-                httpBasic { }
-                formLogin { }
+                oauth2ResourceServer { jwt { } }
+                csrf { disable() }
+                sessionManagement { sessionCreationPolicy = SessionCreationPolicy.STATELESS }
+                httpBasic { disable() }
             }
         }
 
@@ -74,8 +62,10 @@ class WebSecurityConfiguration {
                     authorize(EndpointRequest.toAnyEndpoint(), hasRole("ADMIN"))
                     authorize(anyRequest, authenticated)
                 }
-                httpBasic { }
-                formLogin { }
+                oauth2ResourceServer { jwt { } }
+                csrf { disable() }
+                sessionManagement { sessionCreationPolicy = SessionCreationPolicy.STATELESS }
+                httpBasic { disable() }
             }
         }
     }
