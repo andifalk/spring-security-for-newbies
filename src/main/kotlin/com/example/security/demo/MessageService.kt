@@ -8,5 +8,4 @@ internal class MessageService {
     fun createHelloMessage(message: String) = "Hello $message"
 
     fun getAdminMessage() = "Hello Administrator"
-
 }
