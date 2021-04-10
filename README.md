@@ -31,20 +31,20 @@ All labs are organized using different git branches:
 4. Add authorization to the application (branch _authorization_)
 5. Convert app into an OAuth/OpenID Connect resource server (branch _oauth_)
 
-## Lab 2: Spring Security Custom Authentication Configuration
+## Lab 3: Spring Security Authorization On Web And Method Layers
 
-In this lab the previously auto-configured security is replaced by
-explicit security configuration:
+In this lab the security configuration is extended for authorization:
 
-* All endpoints still require authentication (except the _health_ and _info_ actuator endpoints) giving a _401 Unauthorized_ error
+* The endpoint _/api/admin/_ and all secured actuator endpoints require the _ADMIN_ role
+* All other endpoints work using the _USER_ role  
 * The authentication is possible using basic authentication and form based user/password authentication
 * Two users are configured in an in-memory store:
   * A standard user with username _user_ and password _secret_ (role _USER_)
   * An admin user with username _admin_ and password _admin_ (roles _USER_ and _ADMIN_)
-* All other default protections for session-fixation and csrf are still active and recommended response headers are still set
+* The authorization is configured for web layer (in the _WebSecurityConfiguration_ class), and the method layer using the _@PreAuthorize_ annotation
 
-The tests do not require any change as these do not use the real users and still run with the existing user specified. 
+The tests also require some changes to reflect the new authorizations. 
 
 ## Next step
 
-In lab 3 we will add authorization on the web and method layers.
+In lab 4 we will convert the application into an OAuth 2.0 & OpenID Connect compliant resource server authenticating using JWT (JSON web tokens).

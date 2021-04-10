@@ -6,6 +6,7 @@ import org.springframework.boot.actuate.info.InfoEndpoint
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.provisioning.InMemoryUserDetailsManager
 
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 class WebSecurityConfiguration {
 
     @Bean
@@ -29,7 +31,8 @@ class WebSecurityConfiguration {
         manager.createUser(
             User.withUsername("user")
                 .password(passwordEncoder().encode("secret"))
-                .roles("USER").build())
+                .roles("USER").build()
+        )
         manager.createUser(
             User.withUsername("admin")
                 .password(passwordEncoder().encode("admin"))
@@ -46,7 +49,8 @@ class WebSecurityConfiguration {
             http {
                 securityMatcher("/api/**")
                 authorizeRequests {
-                    authorize(anyRequest, authenticated)
+                    authorize("/api/admin", hasRole("ADMIN"))
+                    authorize(anyRequest, hasRole("USER"))
                 }
                 httpBasic { }
                 formLogin { }
@@ -67,6 +71,7 @@ class WebSecurityConfiguration {
                 authorizeRequests {
                     authorize(EndpointRequest.to(HealthEndpoint::class.java), permitAll)
                     authorize(EndpointRequest.to(InfoEndpoint::class.java), permitAll)
+                    authorize(EndpointRequest.toAnyEndpoint(), hasRole("ADMIN"))
                     authorize(anyRequest, authenticated)
                 }
                 httpBasic { }

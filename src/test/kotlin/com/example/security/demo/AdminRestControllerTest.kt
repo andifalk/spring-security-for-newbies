@@ -38,4 +38,11 @@ internal class AdminRestControllerTest(
             .andDo(print())
             .andExpect(status().isUnauthorized)
     }
+
+    @Test
+    fun `get message forbidden`() {
+        mockMvc.perform(get("/api/admin").with(user("user").password("secret").roles("USER")))
+            .andDo(print())
+            .andExpect(status().isForbidden)
+    }
 }
