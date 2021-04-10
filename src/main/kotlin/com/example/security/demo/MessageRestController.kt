@@ -14,9 +14,8 @@ internal class MessageRestController(private val messageService: MessageService)
     fun helloMessage() = MessageResponse(messageService.createHelloMessage("World"))
 
     @PostMapping
-    fun helloPostMessage(@RequestBody messageRequest: MessageRequest): MessageResponse? {
-        return MessageResponse(messageService.createHelloMessage(messageRequest.message))
-    }
+    fun helloPostMessage(@RequestBody messageRequest: MessageRequest) =
+        MessageResponse(messageService.createHelloMessage(messageRequest.message))
 
     data class MessageRequest(var message: String)
 
