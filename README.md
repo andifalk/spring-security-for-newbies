@@ -19,7 +19,7 @@ You can also look at the REST API docs using:
 * [Open API V3](http://localhost:9090/v3/api-docs)
 * [Swagger UI](http://localhost:9090/swagger-ui.html)
 
-You may also use the provided [postman collection](https://raw.githubusercontent.com/andifalk/spring-security-for-newbies/main/Spring%20Security%20For%20Newbies.postman_collection.json) for your convenience.
+You may also use the provided [postman collection](Spring%20Security%20For%20Newbies.postman_collection.json) for your convenience.
 
 ## The labs
 
