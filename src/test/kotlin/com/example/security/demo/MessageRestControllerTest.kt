@@ -9,7 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
@@ -17,8 +17,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(MessageRestController::class)
 internal class MessageRestControllerTest(
-        @Autowired private val mockMvc: MockMvc,
-        @Autowired private val objectMapper: ObjectMapper
+    @Autowired private val mockMvc: MockMvc,
+    @Autowired private val objectMapper: ObjectMapper
 ) {
 
     @MockBean
@@ -26,20 +26,27 @@ internal class MessageRestControllerTest(
 
     @Test
     fun `get message`() {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/message"))
-                .andExpect(status().isOk).andExpect(
-                        content().string(
-                                """{"greeting":"Hello World"}"""
-                        ))
+        given(this.messageService.createHelloMessage(anyString())).willReturn("Hello World")
+        mockMvc.perform(
+            get("/api/message")
+        )
+            .andDo(print())
+            .andExpect(status().isOk).andExpect(
+                content().string(
+                    """{"greeting":"Hello World"}"""
+                )
+            )
     }
 
     @Test
     fun `post message`() {
         given(this.messageService.createHelloMessage(anyString())).willReturn("Hello test")
 
-        mockMvc.perform(post("/api/message").contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(MessageRestController.MessageRequest(message = "test"))))
-                .andDo(print())
-                .andExpect(status().isOk).andExpect(content().string("""{"greeting":"Hello test"}"""))
+        mockMvc.perform(
+            post("/api/message").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(MessageRestController.MessageRequest(message = "test")))
+        )
+            .andDo(print())
+            .andExpect(status().isOk).andExpect(content().string("""{"greeting":"Hello test"}"""))
     }
 }

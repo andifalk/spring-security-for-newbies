@@ -7,12 +7,11 @@ import org.springframework.web.bind.annotation.*
 internal class MessageRestController(private val messageService: MessageService) {
 
     @GetMapping
-    fun helloMessage() = MessageResponse("Hello World")
+    fun helloMessage() = MessageResponse(messageService.createHelloMessage("World"))
 
     @PostMapping
     fun helloPostMessage(@RequestBody messageRequest: MessageRequest): MessageResponse? {
-        val messageResponse = MessageResponse(messageService.createHelloMessage(messageRequest.message))
-        return messageResponse
+        return MessageResponse(messageService.createHelloMessage(messageRequest.message))
     }
 
     data class MessageRequest(var message: String)

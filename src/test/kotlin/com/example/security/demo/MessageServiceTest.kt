@@ -15,4 +15,10 @@ internal class MessageServiceTest(@Autowired private val messageService: Message
         val greeting = messageService.createHelloMessage("Test")
         assertThat(greeting).isEqualTo("Hello Test")
     }
+
+    @Test
+    fun `get admin greeting`() {
+        val greeting = messageService.getAdminMessage()
+        assertThat(greeting).isEqualTo("Hello Administrator")
+    }
 }
