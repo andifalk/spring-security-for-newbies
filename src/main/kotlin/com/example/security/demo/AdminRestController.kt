@@ -1,7 +1,7 @@
 package com.example.security.demo
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.security.core.userdetails.User
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController
 internal class AdminRestController(private val messageService: MessageService) {
 
     @GetMapping
-    fun admin(@AuthenticationPrincipal user: User) =
-        AdminResponse(messageService.getAdminMessage(), user.username)
+    fun admin(@AuthenticationPrincipal jwt: Jwt) =
+        AdminResponse(messageService.getAdminMessage(), jwt.getClaimAsString("family_name"))
 
     data class AdminResponse(val greeting: String, val username: String)
 }

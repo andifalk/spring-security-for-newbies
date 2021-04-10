@@ -24,7 +24,8 @@ internal class AdminRestControllerTest(
     @Test
     fun `get message`() {
         given(this.messageService.getAdminMessage()).willReturn("Hello Administrator")
-        mockMvc.perform(get("/api/admin").with(jwt().authorities(SimpleGrantedAuthority("ROLE_ADMIN"))))
+        mockMvc.perform(get("/api/admin").with(jwt().jwt { it.claim("family_name", "user") }
+            .authorities(SimpleGrantedAuthority("ROLE_ADMIN"))))
             .andDo(print())
             .andExpect(status().isOk).andExpect(
                 content().string(
@@ -42,7 +43,8 @@ internal class AdminRestControllerTest(
 
     @Test
     fun `get message forbidden`() {
-        mockMvc.perform(get("/api/admin").with(jwt().authorities(SimpleGrantedAuthority("ROLE_USER"))))
+        mockMvc.perform(get("/api/admin").with(jwt().jwt { it.claim("family_name", "user") }
+            .authorities(SimpleGrantedAuthority("ROLE_USER"))))
             .andDo(print())
             .andExpect(status().isForbidden)
     }
