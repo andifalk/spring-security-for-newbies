@@ -31,4 +31,11 @@ internal class AdminRestControllerTest(
                 )
             )
     }
+
+    @Test
+    fun `get message unauthorized`() {
+        mockMvc.perform(get("/api/admin"))
+            .andDo(print())
+            .andExpect(status().isUnauthorized)
+    }
 }

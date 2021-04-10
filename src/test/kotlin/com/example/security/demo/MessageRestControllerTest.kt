@@ -7,7 +7,7 @@ import org.mockito.BDDMockito.given
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.http.MediaType
+import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import org.springframework.test.web.servlet.MockMvc
@@ -30,7 +30,7 @@ internal class MessageRestControllerTest(
     fun `get message`() {
         given(this.messageService.createHelloMessage(anyString())).willReturn("Hello World")
         mockMvc.perform(
-            get("/api/message").with(user("user").password("secret").roles("ADMIN"))
+            get("/api/message").with(user("user").password("secret").roles("USER"))
         )
             .andDo(print())
             .andExpect(status().isOk).andExpect(
@@ -41,14 +41,45 @@ internal class MessageRestControllerTest(
     }
 
     @Test
+    fun `get message unauthorized`() {
+        mockMvc.perform(
+            get("/api/message")
+        )
+            .andDo(print())
+            .andExpect(status().isUnauthorized)
+    }
+
+    @Test
     fun `post message`() {
         given(this.messageService.createHelloMessage(anyString())).willReturn("Hello test")
 
         mockMvc.perform(
-            post("/api/message").with(csrf()).with(user("user")).contentType(MediaType.APPLICATION_JSON)
+            post("/api/message").with(csrf()).with(user("user")).contentType(APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(MessageRestController.MessageRequest(message = "test")))
         )
             .andDo(print())
             .andExpect(status().isOk).andExpect(content().string("""{"greeting":"Hello test"}"""))
+    }
+
+    @Test
+    fun `post message unauthorized`() {
+
+        mockMvc.perform(
+            post("/api/message").with(csrf()).contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(MessageRestController.MessageRequest(message = "test")))
+        )
+            .andDo(print())
+            .andExpect(status().isUnauthorized)
+    }
+
+    @Test
+    fun `post message csrf forbidden`() {
+
+        mockMvc.perform(
+            post("/api/message").with(user("user")).contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(MessageRestController.MessageRequest(message = "test")))
+        )
+            .andDo(print())
+            .andExpect(status().isForbidden)
     }
 }
