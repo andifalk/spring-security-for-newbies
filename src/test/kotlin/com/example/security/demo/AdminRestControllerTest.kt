@@ -27,7 +27,7 @@ internal class AdminRestControllerTest(
             .andDo(print())
             .andExpect(status().isOk).andExpect(
                 content().string(
-                    """{"greeting":"Hello Administrator"}"""
+                    """{"greeting":"Hello Administrator","username":"user"}"""
                 )
             )
     }
