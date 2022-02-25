@@ -22,7 +22,8 @@ logging:
   level:
     org:
       springframework:
-        security: debug
+        security:
+          authentication: trace
 
 
 my-secret-value: very-secret
