@@ -22,7 +22,10 @@ logging:
   level:
     org:
       springframework:
-        security: debug
+        security:
+          authentication: trace
+    com:
+      example: info
 
 
 my-secret-value: very-secret
